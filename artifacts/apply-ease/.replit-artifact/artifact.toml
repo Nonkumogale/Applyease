@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "ApplyEase"
+description = "A student application assistant platform. Students upload their documents once, then select what they're applying for — bursary, internship, scholarship, or university — and the platform manages the entire application process on their behalf, including storing credentials and collecting verification codes when needed."
+version = "1.0.0"
+id = "artifacts/apply-ease"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25725
+
+[services.development]
+run = "pnpm --filter @workspace/apply-ease run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/apply-ease", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/apply-ease/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25725"
+BASE_PATH = "/"

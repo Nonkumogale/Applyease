@@ -3,20 +3,33 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: ApplyEase — Student application assistant API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: applicants
+    description: Student applicant profiles
+  - name: documents
+    description: Applicant documents
+  - name: applications
+    description: Applications to bursaries, internships, scholarships, universities
+  - name: credentials
+    description: Login credentials for application portals
+  - name: verification
+    description: Verification code requests and submissions
+  - name: events
+    description: Application timeline events
+  - name: dashboard
+    description: Dashboard summaries and stats
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +37,791 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /applicants:
+    get:
+      operationId: listApplicants
+      tags: [applicants]
+      summary: List all applicants
+      responses:
+        "200":
+          description: List of applicants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Applicant"
+    post:
+      operationId: createApplicant
+      tags: [applicants]
+      summary: Create an applicant profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicantInput"
+      responses:
+        "201":
+          description: Created applicant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Applicant"
+
+  /applicants/{id}:
+    get:
+      operationId: getApplicant
+      tags: [applicants]
+      summary: Get an applicant by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Applicant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Applicant"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateApplicant
+      tags: [applicants]
+      summary: Update an applicant profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicantUpdate"
+      responses:
+        "200":
+          description: Updated applicant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Applicant"
+        "404":
+          description: Not found
+
+  /applicants/{id}/summary:
+    get:
+      operationId: getApplicantSummary
+      tags: [applicants]
+      summary: Get applicant's profile completeness, document count, and application stats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Applicant summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicantSummary"
+        "404":
+          description: Not found
+
+  /applicants/{id}/documents:
+    get:
+      operationId: listDocuments
+      tags: [documents]
+      summary: List all documents for an applicant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+    post:
+      operationId: createDocument
+      tags: [documents]
+      summary: Upload/register a document for an applicant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentInput"
+      responses:
+        "201":
+          description: Created document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+
+  /applicants/{id}/documents/{docId}:
+    delete:
+      operationId: deleteDocument
+      tags: [documents]
+      summary: Delete a document
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: docId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /applications:
+    get:
+      operationId: listApplications
+      tags: [applications]
+      summary: List all applications
+      parameters:
+        - name: applicantId
+          in: query
+          schema:
+            type: integer
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [bursary, internship, scholarship, university]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in_progress, submitted, awaiting_verification, completed, failed]
+      responses:
+        "200":
+          description: List of applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Application"
+    post:
+      operationId: createApplication
+      tags: [applications]
+      summary: Create a new application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationInput"
+      responses:
+        "201":
+          description: Created application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{id}:
+    get:
+      operationId: getApplication
+      tags: [applications]
+      summary: Get an application by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateApplication
+      tags: [applications]
+      summary: Update an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationUpdate"
+      responses:
+        "200":
+          description: Updated application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteApplication
+      tags: [applications]
+      summary: Delete an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /applications/{id}/credentials:
+    get:
+      operationId: getCredentials
+      tags: [credentials]
+      summary: Get credentials for an application portal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Credential"
+        "404":
+          description: Not found
+    post:
+      operationId: saveCredentials
+      tags: [credentials]
+      summary: Save or update portal login credentials for an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialInput"
+      responses:
+        "201":
+          description: Saved credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Credential"
+
+  /applications/{id}/verification-requests:
+    get:
+      operationId: listVerificationRequests
+      tags: [verification]
+      summary: List all verification code requests for an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of verification requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VerificationRequest"
+    post:
+      operationId: createVerificationRequest
+      tags: [verification]
+      summary: Request a verification code from the student for this application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificationRequestInput"
+      responses:
+        "201":
+          description: Created verification request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationRequest"
+
+  /applications/{id}/verification-requests/{reqId}/submit:
+    post:
+      operationId: submitVerificationCode
+      tags: [verification]
+      summary: Student submits the verification code
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: reqId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificationCodeSubmission"
+      responses:
+        "200":
+          description: Updated verification request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationRequest"
+        "404":
+          description: Not found
+
+  /applications/{id}/events:
+    get:
+      operationId: listApplicationEvents
+      tags: [events]
+      summary: Get the full timeline of events for an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApplicationEvent"
+    post:
+      operationId: createApplicationEvent
+      tags: [events]
+      summary: Add a new event to an application's timeline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationEventInput"
+      responses:
+        "201":
+          description: Created event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationEvent"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get counts and breakdowns for the dashboard
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    Applicant:
+      type: object
+      required: [id, fullName, email, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        dateOfBirth:
+          type: ["string", "null"]
+        address:
+          type: ["string", "null"]
+        idNumber:
+          type: ["string", "null"]
+        institution:
+          type: ["string", "null"]
+        course:
+          type: ["string", "null"]
+        yearOfStudy:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ApplicantInput:
+      type: object
+      required: [fullName, email]
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        phone:
+          type: string
+        dateOfBirth:
+          type: string
+        address:
+          type: string
+        idNumber:
+          type: string
+        institution:
+          type: string
+        course:
+          type: string
+        yearOfStudy:
+          type: integer
+
+    ApplicantUpdate:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        dateOfBirth:
+          type: string
+        address:
+          type: string
+        idNumber:
+          type: string
+        institution:
+          type: string
+        course:
+          type: string
+        yearOfStudy:
+          type: integer
+
+    ApplicantSummary:
+      type: object
+      required: [applicantId, documentCount, applicationCount, completionPercent, byStatus, byType, pendingVerifications]
+      properties:
+        applicantId:
+          type: integer
+        documentCount:
+          type: integer
+        applicationCount:
+          type: integer
+        completionPercent:
+          type: integer
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        byType:
+          type: object
+          additionalProperties:
+            type: integer
+        pendingVerifications:
+          type: integer
+
+    Document:
+      type: object
+      required: [id, applicantId, name, documentType, fileName, createdAt]
+      properties:
+        id:
+          type: integer
+        applicantId:
+          type: integer
+        name:
+          type: string
+        documentType:
+          type: string
+          enum: [id_document, transcript, cv, motivation_letter, recommendation, proof_of_income, proof_of_enrollment, other]
+        fileName:
+          type: string
+        fileSize:
+          type: ["integer", "null"]
+        mimeType:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    DocumentInput:
+      type: object
+      required: [name, documentType, fileName]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        documentType:
+          type: string
+          enum: [id_document, transcript, cv, motivation_letter, recommendation, proof_of_income, proof_of_enrollment, other]
+        fileName:
+          type: string
+        fileSize:
+          type: integer
+        mimeType:
+          type: string
+        notes:
+          type: string
+
+    Application:
+      type: object
+      required: [id, applicantId, applicationType, status, organizationName, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        applicantId:
+          type: integer
+        applicationType:
+          type: string
+          enum: [bursary, internship, scholarship, university]
+        status:
+          type: string
+          enum: [pending, in_progress, submitted, awaiting_verification, completed, failed]
+        organizationName:
+          type: string
+        organizationEmail:
+          type: ["string", "null"]
+        applicationUrl:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        deadline:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ApplicationInput:
+      type: object
+      required: [applicantId, applicationType, organizationName]
+      properties:
+        applicantId:
+          type: integer
+        applicationType:
+          type: string
+          enum: [bursary, internship, scholarship, university]
+        organizationName:
+          type: string
+          minLength: 1
+        organizationEmail:
+          type: string
+        applicationUrl:
+          type: string
+        notes:
+          type: string
+        deadline:
+          type: string
+
+    ApplicationUpdate:
+      type: object
+      properties:
+        applicationType:
+          type: string
+          enum: [bursary, internship, scholarship, university]
+        status:
+          type: string
+          enum: [pending, in_progress, submitted, awaiting_verification, completed, failed]
+        organizationName:
+          type: string
+        organizationEmail:
+          type: string
+        applicationUrl:
+          type: string
+        notes:
+          type: string
+        deadline:
+          type: string
+
+    Credential:
+      type: object
+      required: [id, applicationId, loginEmail, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        applicationId:
+          type: integer
+        loginEmail:
+          type: string
+        loginPassword:
+          type: string
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    CredentialInput:
+      type: object
+      required: [loginEmail, loginPassword]
+      properties:
+        loginEmail:
+          type: string
+        loginPassword:
+          type: string
+        notes:
+          type: string
+
+    VerificationRequest:
+      type: object
+      required: [id, applicationId, requestNote, status, requestedAt]
+      properties:
+        id:
+          type: integer
+        applicationId:
+          type: integer
+        requestNote:
+          type: string
+        code:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, submitted, expired]
+        requestedAt:
+          type: string
+        submittedAt:
+          type: ["string", "null"]
+
+    VerificationRequestInput:
+      type: object
+      required: [requestNote]
+      properties:
+        requestNote:
+          type: string
+          minLength: 1
+
+    VerificationCodeSubmission:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          minLength: 1
+
+    ApplicationEvent:
+      type: object
+      required: [id, applicationId, eventType, description, createdAt]
+      properties:
+        id:
+          type: integer
+        applicationId:
+          type: integer
+        eventType:
+          type: string
+          enum: [created, status_changed, document_attached, credential_saved, verification_requested, verification_submitted, note_added, submitted, completed, failed]
+        description:
+          type: string
+        createdAt:
+          type: string
+
+    ApplicationEventInput:
+      type: object
+      required: [eventType, description]
+      properties:
+        eventType:
+          type: string
+          enum: [created, status_changed, document_attached, credential_saved, verification_requested, verification_submitted, note_added, submitted, completed, failed]
+        description:
+          type: string
+          minLength: 1
+
+    DashboardSummary:
+      type: object
+      required: [totalApplications, totalApplicants, totalDocuments, pendingVerifications, byStatus, byType, recentActivity]
+      properties:
+        totalApplications:
+          type: integer
+        totalApplicants:
+          type: integer
+        totalDocuments:
+          type: integer
+        pendingVerifications:
+          type: integer
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        byType:
+          type: object
+          additionalProperties:
+            type: integer
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApplicationEvent"
