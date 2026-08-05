@@ -1,0 +1,134 @@
+{
+  "name": "StudentProfile",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "title": "Full Name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone"
+    },
+    "id_number": {
+      "type": "string",
+      "title": "ID / Passport Number"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "title": "Date of Birth"
+    },
+    "education_level": {
+      "type": "string",
+      "enum": [
+        "high_school",
+        "university"
+      ],
+      "default": "university",
+      "title": "Education Level"
+    },
+    "field_of_study": {
+      "type": "string",
+      "title": "Field of Study"
+    },
+    "institution": {
+      "type": "string",
+      "title": "Current / Target Institution"
+    },
+    "year_of_study": {
+      "type": "string",
+      "title": "Year of Study",
+      "description": "e.g. 1st year, 2nd year, Graduate"
+    },
+    "gpa": {
+      "type": "string",
+      "title": "GPA / Average %"
+    },
+    "school_name": {
+      "type": "string",
+      "title": "High School Name"
+    },
+    "upgrading": {
+      "type": "boolean",
+      "title": "Upgrading",
+      "description": "Whether the student is upgrading matric marks",
+      "default": false
+    },
+    "grade": {
+      "type": "string",
+      "enum": [
+        "Grade 11",
+        "Grade 12"
+      ],
+      "title": "Grade"
+    },
+    "subjects": {
+      "type": "array",
+      "title": "Subjects & Marks",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Subject Name"
+          },
+          "mark": {
+            "type": "string",
+            "title": "Mark / %"
+          }
+        }
+      },
+      "default": []
+    },
+    "career_choices": {
+      "type": "array",
+      "title": "Career Choices",
+      "description": "Careers the student wants to pursue",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "address": {
+      "type": "string",
+      "title": "Address"
+    },
+    "bio": {
+      "type": "string",
+      "title": "Short Bio / Motivation"
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Document Name"
+          },
+          "file_url": {
+            "type": "string",
+            "title": "File URL"
+          },
+          "type": {
+            "type": "string",
+            "title": "Document Type",
+            "description": "e.g. ID, results, Cv, proof_of_address, other"
+          }
+        }
+      },
+      "title": "Documents",
+      "description": "Uploaded supporting documents (ID, results, CV, etc.)"
+    }
+  },
+  "required": [
+    "full_name",
+    "email"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Opportunity",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "bursary",
+        "internship",
+        "scholarship",
+        "university"
+      ],
+      "default": "bursary",
+      "title": "Category"
+    },
+    "provider_name": {
+      "type": "string",
+      "title": "Provider Name"
+    },
+    "provider_email": {
+      "type": "string",
+      "format": "email",
+      "title": "Provider Email"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "requirements": {
+      "type": "string",
+      "title": "Requirements",
+      "description": "What the applicant needs to qualify / submit"
+    },
+    "application_link": {
+      "type": "string",
+      "format": "uri",
+      "title": "Official Application Link"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "title": "Deadline"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "amount": {
+      "type": "string",
+      "title": "Amount / Value",
+      "description": "e.g. R50,000, Monthly stipend, Full tuition"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "title": "Status"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "provider_name",
+    "application_link"
+  ]
+}

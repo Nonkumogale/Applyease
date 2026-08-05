@@ -1,0 +1,9 @@
+{
+  "name": "Applyease",
+  "site": {
+    "installCommand": "pnpm install",
+    "buildCommand": "pnpm run build",
+    "serveCommand": "pnpm run dev",
+    "outputDirectory": "./dist"
+  }
+}

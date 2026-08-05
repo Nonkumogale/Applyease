@@ -1,0 +1,90 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "opportunity_id": {
+      "type": "string",
+      "title": "Opportunity ID"
+    },
+    "opportunity_title": {
+      "type": "string",
+      "title": "Opportunity Title"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "bursary",
+        "internship",
+        "scholarship",
+        "university"
+      ],
+      "title": "Category"
+    },
+    "provider_name": {
+      "type": "string",
+      "title": "Provider Name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready",
+        "submitted",
+        "verified"
+      ],
+      "default": "draft",
+      "title": "Status"
+    },
+    "cover_letter": {
+      "type": "string",
+      "title": "Generated Cover Letter"
+    },
+    "application_link": {
+      "type": "string",
+      "title": "Application Link"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Submitted Date"
+    },
+    "verification_code": {
+      "type": "string",
+      "title": "Verification Code",
+      "description": "Code from the provider if required"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    },
+    "document_checklist": {
+      "type": "array",
+      "title": "Document Checklist",
+      "description": "Per-application document tracking",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "checked": {
+            "type": "boolean",
+            "title": "Uploaded",
+            "default": false
+          },
+          "file_url": {
+            "type": "string",
+            "title": "File URL"
+          }
+        }
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "opportunity_id",
+    "opportunity_title",
+    "category"
+  ]
+}
