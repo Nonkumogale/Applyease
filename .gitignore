@@ -45,3 +45,9 @@ temp/
 
 # WSL specific
 *~
+
+# Replit / Base44 files
+.replit
+.replitignore
+replit.md
+.npmrc
