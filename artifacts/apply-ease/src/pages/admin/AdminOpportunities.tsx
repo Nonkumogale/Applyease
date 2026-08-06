@@ -30,19 +30,23 @@ const emptyForm = {
 
 export default function AdminOpportunities() {
   const { toast } = useToast();
-  const [opps, setOpps] = useState(null);
+  const [opps, setOpps] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
   const load = async () => {
+    setLoading(true);
     try {
       const data = await apiClient.get('/opportunities?sort=-created_date');
-      setOpps(data);
+      setOpps(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to load opportunities:', error);
       setOpps([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,6 +92,7 @@ export default function AdminOpportunities() {
     } catch (err) {
       toast({
         title: "Save failed",
+        description: "Could not save the opportunity.",
         variant: "destructive",
       });
     } finally {
@@ -105,6 +110,14 @@ export default function AdminOpportunities() {
       toast({ title: "Delete failed", variant: "destructive" });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -237,9 +250,9 @@ export default function AdminOpportunities() {
         </div>
       )}
 
-      {!opps ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      {opps.length === 0 ? (
+        <div className="rounded-xl border border-dashed py-16 text-center text-muted-foreground">
+          No opportunities yet. Add your first one.
         </div>
       ) : (
         <div className="space-y-3">
@@ -286,11 +299,6 @@ export default function AdminOpportunities() {
               </div>
             </div>
           ))}
-          {opps.length === 0 && (
-            <div className="rounded-xl border border-dashed py-16 text-center text-muted-foreground">
-              No opportunities yet. Add your first one.
-            </div>
-          )}
         </div>
       )}
     </div>
